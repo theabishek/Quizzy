@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzy : Result</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon_white.ico">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="script.js"></script>
+    <style>
+      body{
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),url('Images/5066999.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+      }
+      #skipButton {
+    margin-left: 50%;
+    padding: 9px 25px;
+    background-color: rgba(0,136,139,1);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.9);
+    display: block;
+    margin: 20px auto;
+}
+    #resultContainer h2{
+    font-size: 50px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    margin-top: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+    #resultMessage{
+      font-size: 25px;
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <img class="nav_logo" src="images/quizzy_nav_white.png" alt="Quizzy">
+        <nav>
+            <ul class="nav_links">
+                <li><a href="challenges.html">CHALLENGES</a></li>
+                <li><a href="leaderboard.html">LEADERBOARD</a></li>
+                <li><a href="quizcode.html">CREATE QUIZ</a></li>
+                <li><a href="index.html#about_us">ABOUT US</a></li>
+            </ul>
+        </nav>
+        <a class="log_button" href="index.html"><button>EXIT</button></a>
+    </header>
+    <div class="quiz-box">
+      <div class="result-card">
+        <div id="resultContainer">
+          <h2>Quiz Result</h2>
+          <p id="resultMessage"></p>
+          <p>Correct Answer : <span id="totalCorrect"></span></p>
+          <p>Total Questions: <span id="totalQuestions"></span></p>
+          <p>Score Points: <span id="totalScore"></span></p>
+          
+          <button id="skipButton" onclick="joinLeaderboard()">JOIN LEADERBOARD</button>
+        </div>
+      </div>
+    </div>
+    <footer>
+        <p>Copyright &copy; 2023 Quizzy Company. All Rights Reserved</p>
+    </footer>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const totalCorrect = parseInt(urlParams.get('totalCorrect')) || 0;
+        const totalQuestions = parseInt(urlParams.get('totalQuestions')) || 0;
+        const percentage = parseFloat(urlParams.get('percentage')) || 0;
+        const totalScore = parseInt(urlParams.get('totalScore')) || 0;
+        
+        document.getElementById('totalCorrect').textContent = totalCorrect;
+        document.getElementById('totalQuestions').textContent = totalQuestions;
+        document.getElementById('totalScore').textContent = totalScore;
+        document.getElementById('percentage').textContent = percentage.toFixed(2);
+
+        let resultMessage = '';
+        if (percentage >= 90) {
+            resultMessage = 'Excellent!';
+        } else if (percentage >= 80) {
+            resultMessage = 'Very Good!';
+        } else if (percentage >= 70) {
+            resultMessage = 'Good!';
+        } else if (percentage >= 50) {
+            resultMessage = 'Nice!';
+        } else if (percentage >= 40) {
+            resultMessage = 'Can do better.';
+        } else {
+            resultMessage = 'Better luck next time.';
+        }
+
+        document.getElementById('resultMessage').textContent = resultMessage;
+
+        function joinLeaderboard() {
+            window.location.href = `joinleaderboard.html?totalCorrect=${totalCorrect}&totalQuestions=${totalQuestions}&percentage=${percentage}&totalScore=${totalScore}`;
+        }
+    </script>
+</body>
+</html>

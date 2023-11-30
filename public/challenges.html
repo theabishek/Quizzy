@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzy : Challenges</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon_white.ico">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="script.js"></script>
+    <style>
+      body{
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),url('Images/5066999.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+      }
+    </style>
+</head>
+<body>
+    <header>
+        <img class="nav_logo" src="images/quizzy_nav_white.png" alt="Quizzy">
+        <nav>
+            <ul class="nav_links">
+                <li><a href="leaderboard.html">LEADERBOARD</a></li>
+                <li><a href="quizcode.html">CREATE QUIZ</a></li>
+                <li><a href="index.html#about_us">ABOUT US</a></li>
+            </ul>
+        </nav>
+        <a class="log_button" href="authentication.html"><button>CREATE CHALLENGE</button></a>
+    </header>
+    <div class="heading"><h1>Explore World of <img src="Images/quizzy_nav_white.png"></h1></div>
+    <div class="quiz-challenge">
+        <div id="quizCards"></div>
+    </div>
+    <footer>
+        <p>Copyright &copy; 2023 Quizzy Company. All Rights Reserved</p>
+    </footer>
+  
+    <script>
+      fetch('http://localhost:5000/api/challenges')
+        .then(response => response.json())
+        .then(challenges => {
+          const quizCardsContainer = document.getElementById('quizCards');
+
+          const sortedChallenges = challenges.sort((a, b) => {
+
+            if (a.quizCode === 'DQ001') return -1;
+            if (b.quizCode === 'DQ001') return 1;
+
+            return 0;
+          });
+
+          const filteredChallenges = sortedChallenges.filter(challenge => challenge.category.toLowerCase() !== 'private');
+
+          filteredChallenges.forEach(challenge => {
+            const card = document.createElement('div');
+            card.classList.add('quiz-card');
+            card.innerHTML = `
+              <h3>${challenge.title}</h3>
+              <p>Category: ${challenge.category}</p>
+              <p>No. of Questions: ${challenge.questions.length}</p>
+              <button onclick="startChallenge('${challenge.quizCode}')">Start Challenge</button>
+            `;
+            quizCardsContainer.appendChild(card);
+          });
+        })
+        .catch(error => console.error('Error fetching challenges:', error));
+
+      function startChallenge(quizCode) {
+        window.location.href = `challenge-quiz.html?quizCode=${quizCode}`;
+      }
+    </script>
+</body>
+</html>

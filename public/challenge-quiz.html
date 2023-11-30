@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzy : Challenge Quiz</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon_white.ico">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="script.js"></script>
+    <style>
+        body {
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('Images/5066999.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+        }
+
+        .question-container button {
+            margin-top: 10px;
+        }
+
+        button {
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <img class="nav_logo" src="images/quizzy_nav_white.png" alt="Quizzy">
+</header>
+<div class="quiz-box">
+    <div class="display-card">
+        <div id="challengeQuizContainer"></div>
+    </div>
+</div>
+<footer>
+    <p>Copyright &copy; 2023 Quizzy Company. All Rights Reserved</p>
+</footer>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const quizCode = urlParams.get('quizCode');
+    const challengeQuizContainer = document.getElementById('challengeQuizContainer');
+    let currentQuestionIndex = 0;
+    let challenge;
+    let totalCorrect = 0;
+
+    fetch(`http://localhost:5000/api/challenge-quiz?quizCode=${quizCode}`)
+        .then(response => response.json())
+        .then(data => {
+            challenge = data;
+            displayQuestion(challenge.questions[currentQuestionIndex]);
+        })
+        .catch(error => console.error('Error fetching challenge quiz:', error));
+
+    function displayQuestion(question) {
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question-container';
+        questionDiv.innerHTML = `
+            <h4>Question ${currentQuestionIndex + 1}:</h4>
+            <p>${question.question}</p>
+            <ul>
+                ${question.options.map((option, optionIndex) => `
+                    <li>
+                        <label>
+                            <input type="radio" name="question" value="${optionIndex}">
+                            ${String.fromCharCode(65 + optionIndex)}. ${option}
+                        </label>
+                    </li>
+                `).join('')}
+            </ul>
+            <button onclick="nextQuestionOrShowResult()">${currentQuestionIndex === challenge.questions.length - 1 ? 'SHOW RESULT' : 'NEXT QUESTION'}</button>
+            <p id="result"></p>
+        `;
+        challengeQuizContainer.innerHTML = '';
+        challengeQuizContainer.appendChild(questionDiv);
+
+        const radioButtons = document.querySelectorAll('input[name="question"]');
+        radioButtons.forEach((button, index) => {
+            button.addEventListener('change', () => {
+                const resultElement = document.getElementById('result');
+                resultElement.textContent = `Selected option: ${String.fromCharCode(65 + parseInt(button.value))}`;
+            });
+        });
+    }
+
+    function nextQuestionOrShowResult() {
+        const selectedOption = document.querySelector('input[name="question"]:checked');
+        const resultElement = document.getElementById('result');
+
+        if (selectedOption) {
+            const selectedValue = selectedOption.value;
+            const correctOptionIndex = challenge.questions[currentQuestionIndex].options.indexOf(challenge.questions[currentQuestionIndex].correctOption);
+
+            if (selectedValue === correctOptionIndex.toString()) {
+                totalCorrect++; 
+                resultElement.textContent = 'Correct!';
+            } else {
+                resultElement.textContent = `Incorrect. The correct answer is option ${String.fromCharCode(65 + correctOptionIndex)}`;
+            }
+        } else {
+            resultElement.textContent = 'Please select an option before moving to the next question.';
+            return;
+        }
+
+        const button = document.querySelector('button');
+        button.textContent = 'Next Question';
+
+        button.disabled = true;
+
+        setTimeout(() => {
+            button.disabled = false;
+            currentQuestionIndex++;
+            if (currentQuestionIndex < challenge.questions.length) {
+                displayQuestion(challenge.questions[currentQuestionIndex]);
+            } else {
+                showResult();
+            }
+        }, 1000); // 2000 milliseconds (2 seconds)
+    }
+
+    function showResult() {
+    const resultElement = document.getElementById('result');
+    resultElement.innerHTML = ''; 
+
+    const totalQuestions = challenge.questions.length;
+    const totalScore = Math.floor((totalCorrect / totalQuestions) * 100);
+    const percentage = (totalCorrect / totalQuestions) * 100;
+
+    let redirectURL;
+    if (quizCode === 'DQ001') {
+        redirectURL = `leadresult.html?totalCorrect=${totalCorrect}&totalQuestions=${totalQuestions}&totalScore=${totalScore}&percentage=${percentage}&quizCode=${quizCode}`;
+    } else {
+        redirectURL = `result.html?totalCorrect=${totalCorrect}&totalQuestions=${totalQuestions}&totalScore=${totalScore}&percentage=${percentage}&quizCode=${quizCode}`;
+    }
+    window.location.href = redirectURL;
+}
+</script>
+</body>
+</html>

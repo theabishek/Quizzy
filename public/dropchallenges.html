@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzy : Drop Challenge</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon_white.ico">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="script.js"></script>
+    <style>
+        body {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('Images/5066999.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            justify-content: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .drop-card {
+            background-color: #1a1a1f;
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 20px;
+            width: 300px;
+            justify-content: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drop-card input {
+            color: #12131a;
+            background-color: whitesmoke;
+            border: none;
+            margin: 8px 0;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            width: 100%;
+            outline: none;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .auth {
+            font-size: 45px;
+            padding-bottom: 0;
+            margin-bottom: 5%;
+            margin-top: 0;
+            color: whitesmoke;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            font-weight: bold !important;
+        }
+
+        .drop-card button {
+            font-size: 20px;
+            padding: 9px 25px;
+            background-color: rgba(0, 136, 139, 1);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease 0s;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.9);
+        }
+        input::placeholder {
+            color: #1a1a1f;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img class="nav_logo" src="images/quizzy_nav_white.png" alt="Quizzy">
+    </header>
+    <div class="container">
+        <div class="drop-card">
+            <p class="auth">Drop Challenge</p>
+            <input type="text" id="quizCode" placeholder="Quiz Code" required>
+            <input type="text" id="adminUsername" placeholder="Admin Username" required>
+            <input type="password" id="adminPassword" placeholder="Admin Password" required>
+            <button onclick="dropChallenge()">Drop Challenge</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Copyright &copy; 2023 Quizzy Company. All Rights Reserved</p>
+    </footer>
+
+    <script>
+        function dropChallenge() {
+            const quizCode = document.getElementById('quizCode').value;
+            const adminUsername = document.getElementById('adminUsername').value;
+            const adminPassword = document.getElementById('adminPassword').value;
+
+            const storedAdminUsername = 'admin@quizzy';
+            const storedAdminPassword = 'password@quizzy';
+
+            if (adminUsername === storedAdminUsername && adminPassword === storedAdminPassword) {
+                fetch(`http://localhost:5000/api/drop-challenge?quizCode=${quizCode}`, {
+                    method: 'DELETE',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Challenge dropped successfully!');
+                        window.location.href = 'authentication.html';
+                    } else {
+                        alert('Failed to drop challenge. Please check the quiz code and try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error dropping challenge:', error);
+                    alert('An error occurred while dropping the challenge.');
+                });
+            } else {
+                alert('Invalid admin credentials. Please check your username and password.');
+            }
+        }
+    </script>
+</body>
+</html>

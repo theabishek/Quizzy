@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzy : Add Challenge</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon_white.ico">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="script.js"></script>
+    <style>
+      body{
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),url('Images/5066999.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+      }
+
+        textarea.auto-expand {
+            overflow-y: auto; 
+            resize: none;
+            box-sizing: border-box;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 30px;
+            padding: 10px; 
+        }
+
+        .add-card button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img class="nav_logo" src="images/quizzy_nav_white.png" alt="Quizzy">
+        <nav>
+            <ul class="nav_links">
+                <li><a href="challenges.html">CHALLENGES</a></li>
+                <li><a href="leaderboard.html">LEADERBOARD</a></li>
+                <li><a href="quizcode.html">CREATE QUIZ</a></li>
+                <li><a href="index.html#about_us">ABOUT US</a></li>
+            </ul>
+        </nav>
+        <a class="log_button" href="joinquiz.html"><button>JOIN QUIZ</button></a>
+    </header>
+  <div class="heading">
+    <h1>Add Challenge</h2>
+  </div>
+  <div class="quiz-challenge">
+  <div class="add-card">
+    <p>Enter QUIZ in JSON format: </p>
+    <textarea id="challengeData" class="auto-expand" rows="20" cols="40">
+      [
+        {
+          "quizCode": "TEST1",
+          "category": "General",
+          "title": "Sample Quiz",
+          "questions": [
+            {
+              "question": "What is the speed of light?",
+              "options": ["299,792 km/s", "300,000 km/s", "250,000 km/s", "350,000 km/s"],
+              "correctOption": "299,792 km/s"
+            },
+            {
+              "question": "Which planet is known as the Red Planet?",
+              "options": ["Earth", "Mars", "Jupiter", "Venus"],
+              "correctOption": "Mars"
+            },
+            {
+              "question": "What is the square of 9?",
+              "options": ["81", "64", "100", "121"],
+              "correctOption": "81"
+            }
+          ]
+        }
+      ]
+    </textarea>
+    <button onclick="addChallenges()">Add Challenges</button>
+  </div>
+  </div>
+  
+  <footer>
+    <p>Copyright &copy; 2023 Quizzy Company. All Rights Reserved</p>
+</footer>
+
+  <script>
+    async function addChallenges() {
+      try {
+        const challengeData = JSON.parse(document.getElementById('challengeData').value);
+
+        const response = await fetch('http://localhost:5000/api/add-challenges', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(challengeData),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('Challenges added successfully!');
+        } else {
+          alert(`Error adding challenges: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Error adding challenges:', error);
+        alert('An error occurred while adding challenges.');
+      }
+    }
+  </script>
+
+</body>
+</html>

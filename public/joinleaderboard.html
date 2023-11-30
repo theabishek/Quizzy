@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzy : Join Leaderboard</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon_white.ico">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="script.js"></script>
+    <style>
+      body{
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),url('Images/5066999.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+      }
+    </style>
+</head>
+<body>
+    <header>
+        <img class="nav_logo" src="images/quizzy_nav_white.png" alt="Quizzy">
+        <a class="log_button" href="index.html"><button>EXIT</button></a>
+    </header>
+    <div class="container">
+                <form id="generateQuizForm">
+                    <h1 class="formHeading">Join Leaderboard</h1>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <input type="text" id="fullname" name="fullname" placeholder="Full Name">
+                    <input type="email" id="email" name="email" placeholder="Email">
+                    <input type="text" id="college" name="college" placeholder="College Name" required>
+                    <input type="text" id="points" name="points" placeholder="Points Scored" value="" readonly>
+        
+                    <button onclick="joinLeaderboard()">JOIN</button>
+                </form>
+    </div>
+
+    <footer>
+        <p>Copyright &copy; 2023 Quizzy Company. All Rights Reserved</p>
+    </footer>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const totalCorrect = urlParams.get('totalCorrect') || 0;
+        const totalQuestions = urlParams.get('totalQuestions') || 0;
+        const percentage = urlParams.get('percentage') || 0;
+        const totalScore = urlParams.get('totalScore') || 0
+    
+        document.getElementById('points').value = totalScore;
+    
+        async function joinLeaderboard() {
+
+    const username = document.getElementById('username').value;
+    const fullname = document.getElementById('fullname').value;
+    const email = document.getElementById('email').value;
+    const college = document.getElementById('college').value;
+    const points = parseInt(document.getElementById('points').value) || 0;
+
+    const data = {
+        username,
+        fullname,
+        email,
+        college,
+        points
+    };
+
+    try {
+    const response = await fetch('http://localhost:5000/joinleaderboard', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+        console.log('Redirecting to thankyou.html');
+        
+        window.location.href = 'thankyou.html';
+    } else {
+        alert('Failed to send data to the server.');
+    }
+} catch (error) {
+    console.error(error);
+    alert('An error occurred while sending data to the server.');
+}
+}
+    </script>
+</body>
+</html>

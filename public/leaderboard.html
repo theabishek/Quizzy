@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzy : Leaderboard</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon_white.ico">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <script src="script.js"></script>
+    <style>
+      body {
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),url('Images/5066999.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        font-family: 'Montserrat', sans-serif; /* Add this line */
+      }
+
+      .leaderboard-container {
+        text-align: center;
+        padding: 20px;
+        color: #fff;
+      }
+
+      #leaderboard {
+        width: 60%;
+        margin: 0 auto;
+        border-collapse: collapse; /* Change to separate */
+        border-radius: 30px; /* Add this line */
+        overflow: hidden;   /* Add this line to hide table border */
+        box-shadow: rgba(0, 0, 0, 0.9);
+      }
+
+      .header-row th{
+        padding: 10px;
+        background-color: #24252a;
+        color: #fff;
+      } 
+      
+      .leaderboard-entry td {
+        font-weight: bold;
+        font-size: 15px;
+        padding: 10px;
+      }
+
+      .golden {
+        background-color: #00FFAB;
+      }
+
+      .silver {
+        background-color: #14C38E;
+      }
+
+      .bronze {
+        background-color: #0f926b;
+      }
+
+      .other {
+        background-color: #75ffd1;
+        color: #171921 !important;
+      }
+
+      #loadMoreButton {
+        margin: 20px;
+        padding: 9px 25px;
+        background-color: rgba(0,136,139,1);
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease 0s;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.9);
+        font-weight: bold;
+      }
+
+      .heading {
+            text-align: center;
+            background-color: #171921;
+            color: rgb(255, 255, 255);
+            padding: 20px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+            border-radius: 30px;
+            width: min-content;
+            margin: 20px auto; /* Adjust the margin as needed */
+        }
+
+        .heading h1 {
+            margin-top: 0%;
+            font-size: 40px;
+            padding-bottom: 0%;
+            margin-bottom: 0%;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+        }
+    </style>
+</head>
+<body>
+  <header>
+    <img class="nav_logo" src="images/quizzy_nav_white.png" alt="Quizzy">
+    <nav>
+        <ul class="nav_links">
+            <li><a href="challenges.html">CHALLENGES</a></li>
+            <li><a href="quizcode.html">CREATE QUIZ</a></li>
+            <li><a href="index.html#about_us">ABOUT US</a></li>
+        </ul>
+    </nav>
+    <a class="log_button" href="joinquiz.html"><button>JOIN QUIZ</button></a>
+</header>
+    <div class="heading">
+        <h1>LEADERBOARD</h1>
+    </div>
+    <div class="leaderboard-container">
+        
+        <table id="leaderboard">
+          <thead>
+            <tr class="header-row">
+              <th class="rank">RANK</th>
+              <th>USERNAME</th>
+              <th>NAME</th>
+              <th>COLLEGE</th>
+              <th>POINTS</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+        <button id="loadMoreButton" onclick="loadMore()">MORE</button>
+    </div>
+
+    <footer>
+        <p>Copyright &copy; 2023 Quizzy Company. All Rights Reserved</p>
+    </footer>
+
+    <script>
+      let loadedEntries = 0;
+
+      async function loadLeaderboard() {
+          try {
+              const response = await fetch(`http://localhost:5000/leaderboard?limit=${10 + loadedEntries}`);
+              const data = await response.json();
+
+              data.sort((a, b) => b.points - a.points);
+
+              const leaderboardBody = document.getElementById('leaderboardBody');
+              leaderboardBody.innerHTML = '';
+
+              data.forEach((entry, index) => {
+                  const backgroundClass = index === 0 ? 'golden' : (index === 1 ? 'silver' : (index === 2 ? 'bronze' : 'other'));
+                  const rankClass = `rank ${backgroundClass}-rank`;
+
+                  leaderboardBody.innerHTML += `
+                      <tr class="leaderboard-entry ${backgroundClass}">
+                          <td class="${rankClass}">${index + 1}</td>
+                          <td>${entry.username}</td>
+                          <td>${entry.fullname}</td>
+                          <td>${entry.college}</td>
+                          <td>${entry.points}</td>
+                      </tr>
+                  `;
+              });
+
+              const loadMoreButton = document.getElementById('loadMoreButton');
+              loadMoreButton.style.display = (data.length >= 10) ? 'block' : 'none';
+          } catch (error) {
+              console.error(error);
+              alert('An error occurred while fetching leaderboard data.');
+          }
+      }
+
+      function loadMore() {
+          loadedEntries += 10;
+          loadLeaderboard();
+      }
+
+      loadLeaderboard();
+  </script>
+</body>
+</html>
